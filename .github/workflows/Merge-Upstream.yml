@@ -52,5 +52,5 @@ jobs:
       run: git push origin $DOWNSTREAM_BRANCH
       
     - name: SSH connection to Actions
-      uses: P3TERX/debugger-action@master
-      if: env.SSH_ACTIONS == 'true'
+      uses: P3TERX/debugger-action@main
+      if: env.SSH_ACTIONS == 'true' || contains(github.event.action, 'ssh')
