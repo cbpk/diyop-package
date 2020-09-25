@@ -109,6 +109,28 @@ function link_add_node()
     luci.sys.call("lua /usr/share/passwall/subscribe.lua add log")
 end
 
+function get_now_use_node()
+	local e = {}
+	local tcp_node_num = ucic:get(appname, "@global_other[0]", "tcp_node_num") or 1
+	e.tcp = tonumber(tcp_node_num)
+	for i = 1, tcp_node_num, 1 do
+		local data, code, msg = nixio.fs.readfile("/var/etc/passwall/id/TCP_" .. i)
+		if data then
+			e["TCP" .. i] = util.trim(data)
+		end
+	end
+	local udp_node_num = ucic:get(appname, "@global_other[0]", "udp_node_num") or 1
+	e.udp = tonumber(udp_node_num)
+	for i = 1, udp_node_num, 1 do
+		local data, code, msg = nixio.fs.readfile("/var/etc/passwall/id/UDP_" .. i)
+		if data then
+			e["UDP" .. i] = util.trim(data)
+		end
+	end
+	luci.http.prepare_content("application/json")
+	luci.http.write_json(e)
+end
+
 function get_log()
     -- luci.sys.exec("[ -f /var/log/passwall.log ] && sed '1!G;h;$!d' /var/log/passwall.log > /var/log/passwall_show.log")
     luci.http.write(luci.sys.exec(
