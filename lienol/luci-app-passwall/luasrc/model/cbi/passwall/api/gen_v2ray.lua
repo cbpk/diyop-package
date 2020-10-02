@@ -37,7 +37,7 @@ local function gen_outbound(node)
                             headers = {
                                 Host = node.v2ray_tcp_guise_http_host or {}
                             }
-                        } or {}
+                        } or nil
                     }
                 } or nil,
                 kcpSettings = (node.v2ray_transport == "mkcp") and {
