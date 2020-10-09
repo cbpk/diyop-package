@@ -944,15 +944,17 @@ stop() {
 	echolog "清空并关闭相关程序和缓存完成。"
 }
 
-case $1 in
+arg1=$1
+shift
+case $arg1 in
 get_new_port)
-	get_new_port $2 $3
+	get_new_port $@
 	;;
 gen_start_config)
 	gen_start_config $2 $3 $4 $5 $6 $7
 	;;
 node_switch)
-	node_switch $2 $3 $4 $5
+	node_switch $@
 	;;
 stop)
 	[ -n "$2" -a "$2" == "force" ] && force_stop

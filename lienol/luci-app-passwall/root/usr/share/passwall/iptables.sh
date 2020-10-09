@@ -2,6 +2,7 @@
 
 IPSET_LANIPLIST="laniplist"
 IPSET_VPSIPLIST="vpsiplist"
+IPSET_SHUNTLIST="shuntlist"
 IPSET_GFW="gfwlist"
 IPSET_CHN="chnroute"
 IPSET_BLACKLIST="blacklist"
@@ -248,11 +249,16 @@ add_firewall_rule() {
 	echolog "开始加载防火墙规则..."
 	ipset -! create $IPSET_LANIPLIST nethash
 	ipset -! create $IPSET_VPSIPLIST nethash
+	ipset -! create $IPSET_SHUNTLIST nethash
 	ipset -! create $IPSET_GFW nethash
 	ipset -! create $IPSET_CHN nethash
 	ipset -! create $IPSET_BLACKLIST nethash
 	ipset -! create $IPSET_WHITELIST nethash
 
+	local shunt_ids=$(uci show $CONFIG | grep "=shunt_rules" | awk -F '.' '{print $2}' | awk -F '=' '{print $1}')
+	for shunt_id in $shunt_ids; do
+		config_n_get $shunt_id ip_list | tr -s "\r\n" "\n" | sed -e "/^$/d" | sed -e "s/^/add $IPSET_SHUNTLIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
+	done
 	cat $RULES_PATH/chnroute | sed -e "/^$/d" | sed -e "s/^/add $IPSET_CHN &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
 	cat $RULES_PATH/blacklist_ip | sed -e "/^$/d" | sed -e "s/^/add $IPSET_BLACKLIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
 	cat $RULES_PATH/whitelist_ip | sed -e "/^$/d" | sed -e "s/^/add $IPSET_WHITELIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
@@ -447,6 +453,7 @@ del_firewall_rule() {
 
 	ipset -F $IPSET_LANIPLIST >/dev/null 2>&1 && ipset -X $IPSET_LANIPLIST >/dev/null 2>&1 &
 	ipset -F $IPSET_VPSIPLIST >/dev/null 2>&1 && ipset -X $IPSET_VPSIPLIST >/dev/null 2>&1 &
+	#ipset -F $IPSET_SHUNTLIST >/dev/null 2>&1 && ipset -X $IPSET_SHUNTLIST >/dev/null 2>&1 &
 	#ipset -F $IPSET_GFW >/dev/null 2>&1 && ipset -X $IPSET_GFW >/dev/null 2>&1 &
 	#ipset -F $IPSET_CHN >/dev/null 2>&1 && ipset -X $IPSET_CHN >/dev/null 2>&1 &
 	#ipset -F $IPSET_BLACKLIST >/dev/null 2>&1 && ipset -X $IPSET_BLACKLIST >/dev/null 2>&1 &
@@ -457,6 +464,7 @@ del_firewall_rule() {
 flush_ipset() {
 	ipset -F $IPSET_LANIPLIST >/dev/null 2>&1 && ipset -X $IPSET_LANIPLIST >/dev/null 2>&1 &
 	ipset -F $IPSET_VPSIPLIST >/dev/null 2>&1 && ipset -X $IPSET_VPSIPLIST >/dev/null 2>&1 &
+	ipset -F $IPSET_SHUNTLIST >/dev/null 2>&1 && ipset -X $IPSET_SHUNTLIST >/dev/null 2>&1 &
 	ipset -F $IPSET_GFW >/dev/null 2>&1 && ipset -X $IPSET_GFW >/dev/null 2>&1 &
 	ipset -F $IPSET_CHN >/dev/null 2>&1 && ipset -X $IPSET_CHN >/dev/null 2>&1 &
 	ipset -F $IPSET_BLACKLIST >/dev/null 2>&1 && ipset -X $IPSET_BLACKLIST >/dev/null 2>&1 &

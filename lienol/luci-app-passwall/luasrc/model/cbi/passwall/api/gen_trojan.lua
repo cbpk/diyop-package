@@ -4,6 +4,8 @@ local node_section = arg[1]
 local run_type = arg[2]
 local local_addr = arg[3]
 local local_port = arg[4]
+local server_host = arg[5]
+local server_port = arg[6]
 local node = ucursor:get_all("passwall", node_section)
 
 local trojan = {

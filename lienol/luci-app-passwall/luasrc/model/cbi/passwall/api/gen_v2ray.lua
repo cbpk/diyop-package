@@ -1,3 +1,4 @@
+module("luci.model.cbi.passwall.api.gen_v2ray", package.seeall)
 local ucursor = require"luci.model.uci".cursor()
 local json = require "luci.jsonc"
 local node_section = arg[1]
@@ -136,8 +137,8 @@ if redir_port ~= "nil" then
                 udp = true
             }
         })
+        network = "tcp,udp"
     end
-end
 
 local outbound = gen_outbound(node)
 if outbound then table.insert(outbounds, outbound) end
