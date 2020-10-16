@@ -725,7 +725,7 @@ local function parse_link(raw, remark, manual)
 						not result.address:find("%.") or -- 虽然没有.也算域，不过应该没有人会这样干吧
 						result.address:sub(#result.address) == "." -- 结尾是.
 					then
-						log('丢弃无效节点: ' .. result.type .. ' 节点, ' .. result.remarks)
+						log('丢弃过滤节点: ' .. result.type .. ' 节点, ' .. result.remarks)
 					else
 						tinsert(all_nodes, result)
 					end
